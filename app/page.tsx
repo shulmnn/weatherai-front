@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPinIcon, SendIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
 
 export default function WeatherPage() {
   const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
@@ -15,7 +16,6 @@ export default function WeatherPage() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(JSON.stringify(position.coords));
           setLocation(position.coords);
         },
         (error) => {
@@ -41,13 +41,23 @@ export default function WeatherPage() {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        latitude: location?.latitude,
-        longitude: location?.longitude,
+        latitude: location?.latitude.toString(),
+        longitude: location?.longitude.toString(),
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Fetch error:', errorData);
+      toast.error(
+        `Error fetching data: ${errorData.message || 'Unknown error'}`
+      );
+      setLoading(false);
+      return;
+    }
+
     const data = await response.json();
-    setMessage(data);
+    setMessage(data.response);
     toast.dismiss();
     toast.success('Successfully fetched data!');
     setLoading(false);
@@ -85,7 +95,9 @@ export default function WeatherPage() {
           </div>
 
           {message && (
-            <div className="mt-4 p-4 bg-white rounded-lg shadow">{message}</div>
+            <div className="mt-4 p-4 bg-white rounded-lg shadow">
+              <ReactMarkdown>{message}</ReactMarkdown>
+            </div>
           )}
         </CardContent>
       </Card>
