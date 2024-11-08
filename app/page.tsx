@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookDashed, MapPinIcon, SendIcon } from 'lucide-react';
+import { MapPinIcon, SendIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function WeatherPage() {
